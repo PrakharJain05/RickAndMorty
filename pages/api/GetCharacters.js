@@ -5,39 +5,42 @@ const client = new ApolloClient({
   cache: new InMemoryCache(),
 });
 export default async (req, res) => {
-  const search = req.body;
+  const page = req.body.page;
+  const search = req.body.search;
   try {
     const { data } = await client.query({
       query: gql`
-        query {
-          characters(filter: { name: "${search}" }) {
-            info {
-              count
-              pages
-            }
-            results {
-              name
+      query {
+        characters(filter: { name: "${search}"}, page: ${page} ) {
+          info {
+            count
+            pages
+            next
+            prev
+          }
+          results {
+            name
+            id
+            location {
               id
-              location {
-                id
-                name
-              }
-              origin {
-                id
-                name
-              }
-              episode {
-                id
-                episode
-                air_date
-              }
-              image
+              name
             }
+            origin {
+              id
+              name
+            }
+            episode {
+              id
+              episode
+              air_date
+            }
+            image
           }
         }
-      `,
+      }
+    `,
     });
-    res.status(200).json({ characters: data.characters.results, error: null });
+    res.status(200).json({ characters: data.characters, error: null });
   } catch (error) {
     if (error.message === "404: Not Found") {
       res.status(400).json({

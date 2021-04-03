@@ -4,7 +4,7 @@ import { Heading, Text, SimpleGrid } from "@chakra-ui/react";
 export const Character = ({ characters }) => {
   return (
     <SimpleGrid columns={[1, 2, 3]} spacing="40px">
-      {characters.map((character) => {
+      {characters?.map((character) => {
         return (
           <div key={character.id}>
             <Image src={character.image} width={300} height={300} />
