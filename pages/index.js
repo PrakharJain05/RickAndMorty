@@ -11,6 +11,7 @@ import {
 } from "@chakra-ui/react";
 import Character from "../components/Character";
 import {
+  SearchIcon,
   CloseIcon,
   ArrowForwardIcon,
   ArrowBackIcon,
@@ -26,6 +27,7 @@ export default function Home() {
   const [search, setSearch] = useState("");
   const toast = useToast();
   const [page, setPage] = useState(1);
+  const [isSearching, setIsSearching] = useState(false);
   useEffect(async () => {
     const results = await fetch("/api/GetCharacters", {
       method: "post",
@@ -52,7 +54,7 @@ export default function Home() {
         hasPrev: characters.info.prev,
       });
     }
-  }, [page, search]);
+  }, [page, isSearching]);
   return (
     <Flex direction="column" justify="center" align="center">
       <Head>
@@ -63,23 +65,40 @@ export default function Home() {
         <Heading as="h1" size="2xl" mb={8}>
           Rick and Morty
         </Heading>
-        <Stack maxWidth="350px" width="100%" isInline mb={8}>
-          <Input
-            placeholder="Search"
-            border="none"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          ></Input>
-          <IconButton
-            colorScheme="red"
-            aria-label="Reset Button"
-            icon={<CloseIcon />}
-            onClick={async () => {
-              setSearch("");
-              setPage(1);
-            }}
-          />
-        </Stack>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            setIsSearching(!isSearching);
+            setPage(1);
+          }}
+        >
+          <Stack maxWidth="350px" width="100%" isInline mb={8}>
+            <Input
+              placeholder="Search"
+              border="none"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            ></Input>
+            <IconButton
+              colorScheme="blue"
+              aria-label="Search Database"
+              icon={<SearchIcon />}
+              disabled={search === ""}
+              type="submit"
+            />
+            <IconButton
+              colorScheme="red"
+              aria-label="Reset Button"
+              icon={<CloseIcon />}
+              disabled={search === ""}
+              onClick={() => {
+                setSearch("");
+                setPage(1);
+                setIsSearching(!isSearching);
+              }}
+            />
+          </Stack>
+        </form>
         <Character characters={characters} />
         <IconButton
           mx={10}
